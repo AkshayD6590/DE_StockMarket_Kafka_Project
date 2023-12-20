@@ -18,7 +18,7 @@ def fetch_stock_data():
 
         # Check if the request was successful (status code 200)
         if response.status_code == 200:
-            data = response.json()  # Assuming the response is in JSON format
+            data = response.json()
             print("API request successful")
 
             return data
@@ -31,7 +31,7 @@ def fetch_stock_data():
         print("An error occurred:", str(e))
 
 def publish_to_kafka(topic, message):
-    print('Inside Publish to kafka function', topic, message)  # for test
+    #print('Inside Publish to kafka function', topic, message)  # for test
     kafka_brokers = '127.0.0.1:9092'
 
     producer_conf = {'bootstrap.servers': kafka_brokers}
@@ -39,16 +39,14 @@ def publish_to_kafka(topic, message):
     producer = Producer(producer_conf)
 
     try:
-        # Produce a sample message to the specified topic
         producer.produce(topic, value=message)
-        # Wait for any outstanding messages to be delivered and delivery reports received
         producer.flush()
         print(f"Sample message '{message}' sent to topic '{topic}' successfully.")
     except Exception as e:
         print(f"Error: {e}")
 
 stock_data = fetch_stock_data()
-print('The data is :', stock_data)  #For Testing
+#print('The data is :', stock_data)  #For Testing
     
 for record in stock_data:
 
@@ -58,7 +56,7 @@ for record in stock_data:
         publish_to_kafka('Financial', json.dumps(record))
     elif identifier == 'BPCLEQN' or identifier == 'ONGCEQN':
         publish_to_kafka('OilGas', json.dumps(record))
-    elif identifier == 'ITCEQN' or identifier == 'BRITANNIAEQN':
+    elif identifier == 'SUNPHARMAEQN' or identifier == 'DRREDDYEQN':
         publish_to_kafka('Healthcare', json.dumps(record))
     elif identifier == 'ITCEQN' or identifier == 'BRITANNIAEQN':
         publish_to_kafka('FMCG', json.dumps(record))
