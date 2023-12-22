@@ -38,23 +38,21 @@ def create_dynamodb_table(table_name):
             }
         )
         table.meta.client.get_waiter('table_exists').wait(TableName=full_table_name)
+        print('Table Created Sucessfully')
 
 def process_message(message, table):
     try:
-        print('LN 44 : Inside Process_message function :',message)   ##For test delete later
         identifier = message.get('identifier')
-
-        print('LN 47: Inside Process_message function Key is:',identifier, 'AND TABLE Name is :',table)   ##For test delete later
+        
         if identifier is None:
             raise KeyError("'key' field is missing in the message")
-
         data = convert_floats_to_decimal(message)
-        print('LN:52 Inside Process_message function data is :',data)   ##For test delete later
+        
         if data is None:
             raise KeyError("'data' field is missing in the message")
 
-        print('LN 56 : Reacehd Put')
         table.put_item(Item={'key':identifier, 'data': data})
+        print('Data Uploaded successfully')
     except KeyError as e:
         print(f"Error processing message: {e}")
         return
@@ -105,11 +103,10 @@ def consume_and_store_data():
                 create_dynamodb_table(topic)
 
             message_data = json.loads(msg.value().decode('utf-8'))
-            ##print(message_data) ##For test delete later
             process_message(message_data, table)
-
-            # Sleep for 1 minute
-            time.sleep(60)
+            
+            # Sleep for 5 sec
+            time.sleep(5)
 
     except KeyboardInterrupt:
         pass
